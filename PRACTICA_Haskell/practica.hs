@@ -1,5 +1,6 @@
 import Text.Printf(printf)
 import System.IO
+import System.Directory (doesFileExist)
 type Student =  (String, Int, Maybe Int)--(id, in, out)
 
 -- checkIn
@@ -106,15 +107,21 @@ filePath = "University.txt"
 
 studentToString :: Student -> String
 studentToString (id, entrada, salida) =
-    id ++ "," ++ show entrada ++ "," ++ show salida
+    id ++ "," ++ aHour entrada ++ "," ++ formatSalida salida
 
-stringToStudent :: String -> Student
+formatSalida :: Maybe Int -> String
+formatSalida Nothing = "Nothing"
+formatSalida (Just x) = aHour x
 stringToStudent str =
     let (id, rest1) = span (/= ',') str
         rest2 = tail rest1
         (entradaStr, rest3) = span (/= ',') rest2
         salidaStr = tail rest3
-    in (id, read entradaStr, read salidaStr)
+    in (id, aMin entradaStr, parseSalida salidaStr)
+
+parseSalida :: String -> Maybe Int
+parseSalida "Nothing" = Nothing
+parseSalida x = Just (aMin x)
 
 loadStudents :: IO [Student]
 loadStudents = do
