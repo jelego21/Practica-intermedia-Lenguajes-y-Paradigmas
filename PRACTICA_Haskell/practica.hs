@@ -1,5 +1,5 @@
 import Text.Printf(printf)
-import System.IO
+import System.IO--read write files
 import System.Directory (doesFileExist)
 type Student =  (String, Int, Maybe Int)--(id, in, out)
 
