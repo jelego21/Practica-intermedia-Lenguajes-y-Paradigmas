@@ -1,0 +1,5 @@
+estudiante(1000,135,270).
+estudiante(1001,750,855).
+estudiante(1002,290,0).
+estudiante(1003,695,840).
+estudiante(1004,585,720).
