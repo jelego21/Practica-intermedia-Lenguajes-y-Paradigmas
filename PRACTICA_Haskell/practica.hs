@@ -64,7 +64,7 @@ aHour mins =
 tiempoIn :: Student -> String
 tiempoIn (id, entrada, salida) =
     case salida of
-        Nothing -> "El estudiante sigue dentro del campus"
+        Nothing -> "El estudiante esta en el campus"
         Just x ->
             let total = x-entrada
             in "Duración: " ++ aHour total ++ " horas"
