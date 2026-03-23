@@ -1,5 +1,5 @@
 import Text.Printf(printf)
-import Control.Monad.RWS (MonadState(put))
+import System.IO
 type Student =  (String, Int, Maybe Int)--(id, in, out)
 
 -- checkIn
@@ -20,7 +20,9 @@ checkIn lista = do
         let new = (studentId, horaIn, Nothing)
         putStrLn "Entrada registrada"
 
-        return (new : lista)
+        let nuevaLista = new : lista
+        saveStudents nuevaLista
+        return nuevaLista
 -- checkOut
 checkOut :: [Student] -> IO [Student]
 checkOut lista = do
@@ -43,6 +45,7 @@ checkOut lista = do
                         else (id, entrada, salida)
                     ) lista
             putStrLn "Se registró la salida"
+            saveStudents nuevaLista
             return nuevaLista
 
 -- conversion de tiempo hora -> min
@@ -88,8 +91,8 @@ buscar lista = do
 --mostrar todos los estudiantes
 mostrar :: [Student] -> IO()
 mostrar lista = do
-    mapM_ (\(id, entrada, salida)->do
-        putStrLn "Estudiantes registrados:"
+    putStrLn "Estudiantes registrados:"
+    mapM_ (\(id, entrada, salida)->do    
         putStrLn $ "Estudiante:  " ++ id
         putStrLn $ "Hora de entrada: " ++ aHour entrada
         case salida of
@@ -97,8 +100,40 @@ mostrar lista = do
             Just x -> putStrLn $ "Hora de salida: " ++ aHour x
         putStrLn ""
         ) lista
+--archivos
+filePath :: FilePath
+filePath = "University.txt"
+
+studentToString :: Student -> String
+studentToString (id, entrada, salida) =
+    id ++ "," ++ show entrada ++ "," ++ show salida
+
+stringToStudent :: String -> Student
+stringToStudent str =
+    let (id, rest1) = span (/= ',') str
+        rest2 = tail rest1
+        (entradaStr, rest3) = span (/= ',') rest2
+        salidaStr = tail rest3
+    in (id, read entradaStr, read salidaStr)
+
+loadStudents :: IO [Student]
+loadStudents = do
+    exists <- doesFileExist filePath
+    if not exists then return []
+    else do
+        content <- readFile filePath
+        let ls = lines content
+        return (map stringToStudent ls)
+
+saveStudents :: [Student] -> IO ()
+saveStudents lista = do
+    let content = unlines (map studentToString lista)
+    writeFile filePath content
+--main
 main :: IO ()
-main = loop []
+main = do
+    lista <- loadStudents
+    loop lista
     where
         loop :: [Student] -> IO ()
         loop lista = do
