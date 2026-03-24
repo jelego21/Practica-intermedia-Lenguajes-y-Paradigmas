@@ -9,10 +9,19 @@ imprimir_hhmm(Total) :-
     (Mins < 10 -> write('0'), write(Mins) ; write(Mins)).
 
 % -- para calcular la duracion en el campus --
-duracion(ID, Duracion) :-
-    estudiante(ID, Entrada, Salida),
-    Salida =\= 0,
-    Duracion is Salida - Entrada.   
+calcular_duracion:-
+    write('ID del estudiante: '), read(ID),
+    (estudiante(ID, Entrada, Salida) ->
+        (Salida =:= 0 ->
+            write('El estudiante sigue en el campus.'), nl
+        ;
+            Duracion is Salida - Entrada,
+            write('La duracion en el campus es: '), imprimir_hhmm(Duracion), write(' h'), nl
+        )
+    ;
+        write('Estudiante no encontrado.'), nl
+    ).
+
 
 %-- imprimir estudiante --
 imprimir_estudiante(estudiante(ID, Entrada, Salida)) :-
@@ -49,7 +58,7 @@ buscar :-
         (Salida =:= 0 ->
             write('El estudiante esta en el campus. Entrada: '), imprimir_hhmm(Entrada), nl
         ;
-            duracion(ID, Duracion),
+            Duracion is Salida - Entrada,
             write('El estudiante ha salido. Salida: '), imprimir_hhmm(Salida),
             write(' | Duracion: '), imprimir_hhmm(Duracion), write(' h'), nl
         )
@@ -92,7 +101,7 @@ guardar:-
 
 %--to load--
 cargar :-
-    (exists_file('University.txt') -> consult('University.txt') ; true).
+    (exists_file('University.txt') -> consult('University.txt') ; true). % - consult carga el archivo para que pueda trabajar con su contenido 
 
 
 %--menu--
@@ -100,15 +109,17 @@ menu :-
     write('--- Menu ---'), nl,
     write('1. Registrar entrada'), nl,
     write('2. Buscar estudiante'), nl,
-    write('3. Registrar salida'), nl,
-    write('4. Listar estudiantes'), nl,
+    write('3. Calcular duracion'), nl,
+    write('4. Registrar salida'), nl,
+    write('5. Listar estudiantes'), nl,
     write('0. Salir'), nl,
     write('Seleccione una opcion: '), read(Opcion), ejecutar(Opcion).
 
     ejecutar(1) :- check_in, menu.  % para que se vuelva a ejecutar menu 
     ejecutar(2) :- buscar, menu.
-    ejecutar(3) :- check_out, menu.
-    ejecutar(4) :- listar, menu.
+    ejecutar(3) :- calcular_duracion, menu.
+    ejecutar(4) :- check_out, menu.
+    ejecutar(5) :- listar, menu.
     ejecutar(0) :- write('Saliendo...'), nl.
     ejecutar(_) :- write('Opcion no valida.'), nl, menu.
 
