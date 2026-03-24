@@ -144,27 +144,27 @@ main = do
     where
         loop :: [Student] -> IO ()
         loop lista = do
-            putStrLn "Seleccione una opción:"
+            putStrLn "--- Menu ---"
             putStrLn "1. Registrar entrada"
-            putStrLn "2. Registrar salida"
-            putStrLn "3. Buscar estudiante"
+            putStrLn "2. Buscar estudiante"
+            putStrLn "3. Registrar salida"
             putStrLn "4. Listar estudiantes"
-            putStrLn "5. Salir"
+            putStrLn "0. Salir"
             option <- getLine
             case option of
                 "1" -> do
                     newList <- checkIn lista
                     loop newList
                 "2" -> do
-                    newList <- checkOut lista
-                    loop newList
-                "3" -> do
                     buscar lista
                     loop lista
+                "3" -> do
+                    newList <- checkOut lista
+                    loop newList
                 "4" -> do
                     mostrar lista
                     loop lista
-                "5" -> putStrLn "Saliendo..."
+                "0" -> putStrLn "Saliendo..."
                 _   -> do
                     putStrLn "Opción no válida, intente de nuevo."
                     loop lista
