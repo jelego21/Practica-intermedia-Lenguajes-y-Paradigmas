@@ -101,6 +101,24 @@ mostrar lista = do
             Just x -> putStrLn $ "Hora de salida: " ++ aHour x
         putStrLn ""
         ) lista
+
+--calcular tiempo del estudiante en el campus
+calcularTiempo :: [Student] -> IO()
+calcularTiempo lista = do
+    putStrLn "ID del estudiante: "
+    busquedaId <- getLine
+    let result = filter (\(id,_,_) -> id == busquedaId) lista
+    case result of
+        [] -> putStrLn "ID no encontrado"
+        ((id, entrada, salida):_) -> do
+            putStrLn $ "Estudiante: " ++ id
+            putStrLn $ "Hora de entrada: " ++ aHour entrada
+            case salida of
+                Nothing -> putStrLn "El estudiante está en el campus actualmente"
+                Just x -> do
+                    let total = x - entrada
+                    putStrLn $ "Hora de salida: " ++ aHour x
+                    putStrLn $ "Tiempo en el campus: " ++ aHour total ++ "\n"
 --archivos
 filePath :: FilePath
 filePath = "University.txt"
@@ -147,8 +165,9 @@ main = do
             putStrLn "--- Menu ---"
             putStrLn "1. Registrar entrada"
             putStrLn "2. Buscar estudiante"
-            putStrLn "3. Registrar salida"
-            putStrLn "4. Listar estudiantes"
+            putStrLn "3. Calcular tiempo en el campus"
+            putStrLn "4. Registrar salida"
+            putStrLn "5. Listar estudiantes"
             putStrLn "0. Salir"
             option <- getLine
             case option of
@@ -159,9 +178,12 @@ main = do
                     buscar lista
                     loop lista
                 "3" -> do
+                    calcularTiempo lista
+                    loop lista
+                "4" -> do
                     newList <- checkOut lista
                     loop newList
-                "4" -> do
+                "5" -> do
                     mostrar lista
                     loop lista
                 "0" -> putStrLn "Saliendo..."
